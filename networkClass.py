@@ -6,8 +6,8 @@ class Network:
         self.server = "192.168.1.19" # server public(or local) address.
         self.port = 8080
         self.addr = (self.server, self.port)
-        self.id = self.connect()
-        print(self.id)
+        self.id = "FullCount" # pls manually input an ID.
+        print("{0} trying to initiate a connection with server on {1}:{2}".format(self.id, self.server, self.port))
 
     def connect(self):
         try:
@@ -24,5 +24,12 @@ class Network:
             print(str(e))
     
 n = Network()
-print(n.send("hello"))
-print(n.send("working"))
+print(n.send(n.id))
+
+while True:
+        inp = input("You : ")
+
+        if inp.lower() == "quit()":
+            break
+
+        n.send(inp)
