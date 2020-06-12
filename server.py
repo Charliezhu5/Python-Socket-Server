@@ -31,9 +31,8 @@ print("Server started, waiting for a connection...")
 # control of each connected client
 def ThreadedClient(conn):
 
-    conn.send(str.encode("Server: Connected to server. Please send me message..."))
-    userID = conn.recv(2048).decode("utf-8")
     reply = ""
+    userID = ""
 
     while True:
         try:
@@ -43,15 +42,19 @@ def ThreadedClient(conn):
             if not data:
                 print("Disconnected")
                 break
-            else: # the part that handles received data.
-                # below will simply inject client sent data to mysql server, and reply them result.
-                print("Received data from user: {0}".format(userID))
-                print("Injecting data to sql server....")
-                injection = (receivedText, userID)
-                cursor.execute(sql1, injection)
-                print("Injecting data to sql server....Done")
-                reply = "Server: Your input has been successfully logged."
-                conn.sendall(str.encode(reply))
+
+            # the part that handles received data.
+            # below will simply inject client sent data to mysql server, and reply them result.
+            if "ID=" in receivedText:
+                userID = receivedText
+
+            print("Received data from user: {0}".format(userID))
+            print("Injecting data to sql server....")
+            injection = (receivedText, userID)
+            cursor.execute(sql1, injection)
+            print("Injecting data to sql server....Done")
+            reply = "Server: Your input has been successfully logged."
+            conn.sendall(str.encode(reply))
 
         except:
             print("Error at Threaded Client.")
