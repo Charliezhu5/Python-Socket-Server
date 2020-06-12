@@ -1,4 +1,3 @@
-print("Importing libraries...")
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
 stemmer = LancasterStemmer()
@@ -114,17 +113,17 @@ def bag_of_words(s,tokens):
     
     return numpy.array(bag)
 
-def chat():
-    print("Start talking with bot. Type quit() to quit program.")
-    while True:
-        inp = input("You : ")
+def NeuralResponse(inp):
+    #print("Start talking with bot. Type quit() to quit program.")
+    #while True:
+        #inp = input("You : ")
 
-        if inp.lower() == "quit()":
-            break
+        #if inp.lower() == "quit()":
+            #break
 
-        result = model.predict([bag_of_words(inp, tokens)])
-        result_index = numpy.argmax(result)
-        result_tag = intents[result_index]
-        print("Your input is classified as '{0}'.".format(result_tag))
+    result = model.predict([bag_of_words(inp, tokens)])
+    result_index = numpy.argmax(result)
+    result_tag = intents[result_index]
+    return result_tag
 
-chat()
+#chat()

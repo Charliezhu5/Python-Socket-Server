@@ -4,6 +4,7 @@ from _thread import *
 import sys
 import pandas as pd
 import pymysql
+import neural
 print("Importing Libraries...Done")
 
 print("Setting pymysql parameters...")
@@ -30,9 +31,11 @@ print("Server started, waiting for a connection...")
 
 # control of each connected client
 def ThreadedClient(conn):
-
+    conn.send(str.encode("Connected to server."))
+    data = conn.recv(2048) # define how much of bits to receive information.
+    userID = data.decode("utf-8")
+    conn.send(str.encode("Welcome! {0}!".format(userID)))
     reply = ""
-    userID = ""
 
     while True:
         try:
@@ -45,15 +48,24 @@ def ThreadedClient(conn):
 
             # the part that handles received data.
             # below will simply inject client sent data to mysql server, and reply them result.
-            if "ID=" in receivedText:
-                userID = receivedText
 
             print("Received data from user: {0}".format(userID))
             print("Injecting data to sql server....")
-            injection = (receivedText, userID)
-            cursor.execute(sql1, injection)
+
+            try: # try logging text into db.
+                injection = (receivedText, userID)
+                cursor.execute(sql1, injection)
+                connection.commit()
+            except:
+                print("Injecting data to sql server....Failed")
+                repliedIntent = neural.NeuralResponse(receivedText)
+                reply = "Server: Your input was categorized as '{0}'.".format(repliedIntent)
+                conn.sendall(str.encode(reply))
+                continue
+
             print("Injecting data to sql server....Done")
-            reply = "Server: Your input has been successfully logged."
+            repliedIntent = neural.NeuralResponse(receivedText)
+            reply = "Server: Your input was categorized as '{0}'.".format(repliedIntent)
             conn.sendall(str.encode(reply))
 
         except:
