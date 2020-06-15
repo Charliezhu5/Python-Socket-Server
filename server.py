@@ -1,83 +1,44 @@
-print("Importing Libraries...")
+print("Importing python libs......")
 import socket
-from _thread import *
+import threading
 import sys
-import pandas as pd
-import pymysql
-import neural
-print("Importing Libraries...Done")
+from protocal_server_msg import get_msg_protocal, send_msg_protocal, get_userID
+from sqlstuff import sql_inject
+from classify import neural_classify
 
-print("Setting pymysql parameters...")
-connection = pymysql.connect(host="localhost", user="root", password="000000", db="chatbot_test")
-cursor = connection.cursor()
-data = {'Text':[], 'UserID':[]}
-df = pd.DataFrame(data)
-sql1 = "insert into messages(Text, UserID) values (%s, %s)"
-print("Setting pymysql parameters...Done")
-
-# connection setup:
 PORT = 8080
-server = "0.0.0.0"
+SERVERADDR = ''
+ADDR = (SERVERADDR, PORT)
+print(f"[Server Info] The local address of this server is {ADDR}")
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(ADDR)
 
-try:
-    s.bind((server, PORT))
-except socket.error as e:
-    print(str(e))
-
-s.listen(5) # how many clients allowed.
-print("Server started, waiting for a connection...")
-
-# control of each connected client
-def ThreadedClient(conn):
-    conn.send(str.encode("Connected to server."))
-    data = conn.recv(2048) # define how much of bits to receive information.
-    userID = data.decode("utf-8")
-    conn.send(str.encode("Welcome! {0}!".format(userID)))
-    reply = ""
+def handle_client(conn, addr):
+    print(f"[Server Info] Connected to {addr}.")
+    userID = str(get_userID(conn))
 
     while True:
-        try:
-            data = conn.recv(2048) # define how much of bits to receive information.
-            receivedText = data.decode("utf-8")
-
-            if not data:
-                print("Disconnected")
-                break
-
-            # the part that handles received data.
-            # below will simply inject client sent data to mysql server, and reply them result.
-
-            print("Received data from user: {0}".format(userID))
-            print("Injecting data to sql server....")
-
-            try: # try logging text into db.
-                injection = (receivedText, userID)
-                cursor.execute(sql1, injection)
-                connection.commit()
-            except:
-                print("Injecting data to sql server....Failed")
-                repliedIntent = neural.NeuralResponse(receivedText)
-                reply = "Server: Your input was categorized as '{0}'.".format(repliedIntent)
-                conn.sendall(str.encode(reply))
-                continue
-
-            print("Injecting data to sql server....Done")
-            repliedIntent = neural.NeuralResponse(receivedText)
-            reply = "Server: Your input was categorized as '{0}'.".format(repliedIntent)
-            conn.sendall(str.encode(reply))
-
+        try: # need more work on error handling.
+            rcv_msg = get_msg_protocal(conn,addr)
+            sql_inject(rcv_msg, userID)
+            rply_msg = neural_classify(rcv_msg)
+            send_msg_protocal(conn, addr, rply_msg)
         except:
-            print("Error at Threaded Client.")
+            print("[Server Error] Error!")
             break
-    
-    print("Lost connection")
+
     conn.close()
+    print(f"[Server Info] Disconnected to {addr}.")
 
-# running loop.
-while True:
-    conn, addr = s.accept()
-    print("Connected to: ", addr)
+def start_server():
+    server.listen()
+    print("[Server Info] The server is now listening......")
+    while True:
+        conn, addr = server.accept()
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()
+        print(f"[Server Info] {threading.activeCount() - 1}")
 
-    start_new_thread(ThreadedClient, (conn,)) # put ThreadedClient background as a new thread outside of loop. no need to wait for the funct.
+print("[Server Info] Initializing Server......")
+start_server()

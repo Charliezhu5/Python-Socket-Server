@@ -1,35 +1,25 @@
 import socket
 import sys
+from protocal_client_msg import get_msg_protocal, send_userID
 
 SERVER = '192.168.1.19'
 PORT = 8080
 ADDR = (SERVER, PORT)
-FORMAT = 'utf-8'
-HEADER = 64
-DISCONNECT_MESSAGE = '!DISCONNECT'
+ID = 'Name' # Your name will be your ID, no more than 64 characters.
+
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
     client_socket.connect(ADDR)
+    send_userID(client_socket, ID)
 except:
     pass
 
 while True:
-        inp = input("You : ")
+        inp = input(f"{ID} : ")
 
-        if inp.lower() == "quit()":
-            client_socket.send(str(sys.getsizeof(DISCONNECT_MESSAGE)).encode(FORMAT))
-            client_socket.send(DISCONNECT_MESSAGE.encode(FORMAT))
-            rcv_msg_len = client_socket.recv(HEADER).decode(FORMAT)
-            rcv_msg_len = int(rcv_msg_len)
-            rcv_msg = client_socket.recv(rcv_msg_len).decode(FORMAT)
-            print(rcv_msg)
+        try:
+            get_msg_protocal(client_socket, inp)
+        except:
             break
-
-        client_socket.send(str(sys.getsizeof(inp)).encode(FORMAT))
-        client_socket.send(inp.encode(FORMAT))
-        rcv_msg_len = client_socket.recv(HEADER).decode(FORMAT)
-        rcv_msg_len = int(rcv_msg_len)
-        rcv_msg = client_socket.recv(rcv_msg_len).decode(FORMAT)
-        print(rcv_msg)

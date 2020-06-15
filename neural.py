@@ -12,11 +12,11 @@ import pickle
 print("Opening json file.....")
 
 #Try finding previously generated training data.
-with open("intents.json") as file:
+with open("NeuralNetwork/intents.json") as file:
     data = json.load(file)
 
 try:
-    with open("data.pickle", "rb") as f:
+    with open("NeuralNetwork/data.pickle", "rb") as f:
         tokens, intents, training, output = pickle.load(f)
 
 except:
@@ -89,14 +89,14 @@ model = tflearn.DNN(net)
 print("Setting up training network.....Done")
 
 try:
-    model.load("model.tflearn")
+    model.load("NeuralNetwork/model.tflearn")
 except:
     print("And training.........")
     model.fit(training, output, n_epoch=1000, batch_size=8, show_metric=True)
     print("And training.........Done")
 
     print("Saving training model.tflearn .........")
-    model.save("model.tflearn")
+    model.save("NeuralNetwork/model.tflearn")
     print("Saving training model.tflearn .........Done")
 
 #Chatbot interface
@@ -125,5 +125,3 @@ def NeuralResponse(inp):
     result_index = numpy.argmax(result)
     result_tag = intents[result_index]
     return result_tag
-
-#chat()
