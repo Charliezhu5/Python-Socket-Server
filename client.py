@@ -1,6 +1,6 @@
 import socket
 import sys
-from protocal_client_msg import get_msg_protocal, send_userID
+from protocol_client import get_msg, send_msg, send_userID, end_connection, send_pickle, get_pickle
 
 SERVER = '192.168.1.19'
 PORT = 8080
@@ -17,9 +17,30 @@ except:
     pass
 
 while True:
-        inp = input(f"{ID} : ")
 
-        try:
-            get_msg_protocal(client_socket, inp)
-        except:
-            break
+    inp = input(f"{ID} : ")
+
+    #try:
+
+    send_msg(client_socket,inp)
+
+    if inp.lower() == "quit()":
+        end_connection(client_socket)
+        print("You quit.")
+        break
+
+    if not inp:
+        print("[Warning] Input cannot be empty!!! Please try again.")
+        continue
+
+    if inp.lower() == 'test()':
+        test = ('1', '2', '3', '4', '5')
+        send_pickle(client_socket, test)
+        data = get_pickle(client_socket)
+        print(data)
+        continue
+
+    print(get_msg(client_socket))
+
+    #except:
+        #break
