@@ -9,8 +9,6 @@ import random
 import json
 import pickle
 
-print("Opening json file.....")
-
 #Try finding previously generated training data.
 with open("NeuralNetwork/intents.json") as file:
     data = json.load(file)
@@ -25,7 +23,6 @@ except:
     patterns = []
     intentList = []
 
-    print("Tokenizing inputs in json file.....")
     for intent in data["intents"]:
 
         if intent["tag"] not in intents:
@@ -40,7 +37,6 @@ except:
 
     tokens = [stemmer.stem(t.lower()) for t in tokens if t not in "?"]
     tokens = sorted(list(set(tokens)))
-    print("Tokenizing inputs in json file.....Done")
     #intentList = sorted(intentList)
 
     training = []
@@ -48,7 +44,6 @@ except:
 
     networkOutput = [0 for _ in range(len(intents))] #our current output is a list of 1s and 0s of labelTags, aka intents.tag
 
-    print("Generating training data......")
     for index, pattern in enumerate(patterns):
         bag = []
         currentPattern = nltk.word_tokenize(pattern)
@@ -67,13 +62,11 @@ except:
 
         training.append(bag)
         output.append(outputRow)
-    print("Generating training data......Done")
 
     #Save training data to data.pickle if first time encountering.
-    with open("data.pickle", "wb") as f:
+    with open("NeuralNetwork/data.pickle", "wb") as f:
         pickle.dump((tokens, intents, training, output), f)
 
-print("Setting up training network.....")
 training = numpy.array(training)
 output = numpy.array(output)
 
@@ -86,18 +79,12 @@ net = tflearn.fully_connected(net, len(output[0]), activation="softmax")
 net = tflearn.regression(net)
 
 model = tflearn.DNN(net)
-print("Setting up training network.....Done")
 
 try:
     model.load("NeuralNetwork/model.tflearn")
 except:
-    print("And training.........")
     model.fit(training, output, n_epoch=1000, batch_size=8, show_metric=True)
-    print("And training.........Done")
-
-    print("Saving training model.tflearn .........")
     model.save("NeuralNetwork/model.tflearn")
-    print("Saving training model.tflearn .........Done")
 
 #Chatbot interface
 def bag_of_words(s,tokens):
@@ -114,14 +101,20 @@ def bag_of_words(s,tokens):
     return numpy.array(bag)
 
 def NeuralResponse(inp):
-    #print("Start talking with bot. Type quit() to quit program.")
-    #while True:
-        #inp = input("You : ")
 
-        #if inp.lower() == "quit()":
-            #break
+    backup_responses = ["uuuhhh what do you mean", "why", "probably....uh", "ok ok....."]
 
-    result = model.predict([bag_of_words(inp, tokens)])
-    result_index = numpy.argmax(result)
-    result_tag = intents[result_index]
-    return result_tag
+    results = model.predict([bag_of_words(inp, tokens)])
+    max_index = numpy.argmax(results)
+    result_tag = intents[max_index]
+
+    if results[0][max_index] > 0.7:
+        for tg in data["intents"]:
+            if tg['tag'] == result_tag:
+                responses = tg['responses']
+                break
+
+        return(random.choice(responses))
+
+    else:
+        return(random.choice(backup_responses))

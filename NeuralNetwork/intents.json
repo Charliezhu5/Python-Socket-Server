@@ -1,33 +1,83 @@
 {"intents": [
-        {"tag": "greeting",
-         "patterns": ["Hi", "How are you", "Is anyone there?", "Hello", "Good day", "Whats up"],
-         "responses": ["Hello!", "Good to see you again!", "Hi there, how can I help?"],
+        {"tag": "what",
+         "responses": ["Hi", "Hello", "Whats Up", "Yeah", "How are you, everything ok?"],
+         "patterns": ["Hello", "Hi", "Yo", "Hey", "Whats up"],
          "context_set": ""
         },
-        {"tag": "goodbye",
-         "patterns": ["cya", "See you later", "Goodbye", "I am Leaving", "Have a Good day"],
-         "responses": ["Sad to see you go :(", "Talk to you later", "Goodbye!"],
+        {"tag": "Morning",
+         "responses": ["Morning", "Goodmorning", "Im up", "how you feeling"],
+         "patterns": ["Good Morning", "Goodmorning", "Are you up", "Morning"],
          "context_set": ""
         },
-        {"tag": "age",
-         "patterns": ["how old", "how old is tim", "what is your age", "how old are you", "age?"],
-         "responses": ["I am 18 years old!", "18 years young!"],
+        {"tag": "Night",
+         "responses": ["Night", "Goodnight", "I am tired too, goodnight"],
+         "patterns": ["night", "gooodnight", "good night", "I am sleepy"],
          "context_set": ""
         },
-        {"tag": "name",
-         "patterns": ["what is your name", "what should I call you", "whats your name?"],
-         "responses": ["You can call me Tim.", "I'm Tim!", "I'm Tim aka Tech With Tim."],
+        {"tag": "Gym",
+         "responses": ["yeah later at Polos", "Ima check the time, but Polos"],
+         "patterns": ["6pm at Polos, right?", "Where are we training?", "what time are we training"],
          "context_set": ""
         },
-        {"tag": "shop",
-         "patterns": ["Id like to buy something", "whats on the menu", "what do you reccommend?", "could i get something to eat"],
-         "responses": ["We sell chocolate chip cookies for $2!", "Cookies are on the menu!"],
+        {"tag": "Busy",
+         "responses": ["kind of"],
+         "patterns": ["are you busy", "you busy"],
          "context_set": ""
         },
-        {"tag": "hours",
-         "patterns": ["when are you guys open", "what are your hours", "hours of operation"],
-         "responses": ["We are open 7am-4pm Monday-Friday!"],
+        {"tag": "Activity",
+         "responses": ["I am working on the usual, hbu", "yo-yo stuff", "working out", "im coding", "im eating"],
+         "patterns": ["What are you doing", "are you busy"],
+         "context_set": ""
+        },
+        {"tag": "Basic Responses",
+         "responses": ["Cool cool", "ok ok", "alrightyyy"],
+         "patterns": ["I am working", "I am watching stuff", "nothing", "i am eating", "i am laying down", "i am in bed", "ok ok", "ok"],
+         "context_set": ""
+        },
+        {"tag": "Concerned",
+         "responses": ["how are you", "how is your hair feeling", "im fine"],
+         "patterns": ["yes everyhthing ok", "im in bed", "im tired"],
+         "context_set": ""
+        },
+        {"tag": "How",
+         "responses": ["i am fine, how about you"],
+         "patterns": ["are you ok", "you ok?", "whats wrong?", "how are you"],
+         "context_set": ""
+        },
+        {"tag": "",
+         "responses": ["whats wrong"],
+         "patterns": ["?????"],
+         "context_set": ""
+        },
+        {"tag": "Food",
+         "responses": ["what did yooou eat", "food", "im eating beef, hbu"],
+         "patterns": ["What did you eat"],
+         "context_set": ""
+        },
+        {"tag": "Bye",
+         "responses": ["bye", "ok ok bye", "(doesnt reply)"],
+         "patterns": ["bye"],
+         "context_set": ""
+        },
+        {"tag": "Stuff",
+         "responses": ["hard to explain"],
+         "patterns": ["what kind of stuff", "what exactly are you doing", "What stuff?", "what is that"],
+         "context_set": ""
+        },
+        {"tag": "Excuse",
+         "responses": ["uhhh nvm", "uhhh subject change, how are you"],
+         "patterns": ["excuse me", "What"],
+         "context_set": ""
+        },
+        {"tag": "Fine",
+         "responses": ["Ok ok thats good"],
+         "patterns": ["im fine", "im okay", "im tired"],
+         "context_set": ""
+        },
+        {"tag": "Want",
+         "responses": ["Sure, but after I finish all my work"],
+         "patterns": ["do you want to eat", "do you want to come over", "do you want to watch something", "do you want to have dinner"],
          "context_set": ""
         }
-   ]
+    ]
 }
